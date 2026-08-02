@@ -14,31 +14,25 @@ WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 def get_weather():
     url = (
         "https://api.weatherapi.com/v1/current.json?"
-        f"key={WEATHER_API_KEY}&q= response = requests.get(url, timeout=10)
-response = requests.get(url, timeout=10)
-
-print("Weather API status:", response.status_code)
-print("Weather API response:", response.text[:500])
-
-response = requests.get(url, timeout=10)
-
-print("Weather API status:", response.status_code)
-print("Weather API response:", response.text)
-
-data = response.json()
-
-if "current" not in data:
-    raise Exception(f"Weather API returned an error: {data}")
-def weather_report(weather):
-    return (
-        f"Here is your Delaware forecast. "
-        f"In Newark, Delaware, temperatures are currently "
-        f"{weather['temp']} degrees with "
-        f"{weather['condition'].lower()}. "
-        f"Winds are at {weather['wind']} miles per hour "
-        f"with humidity at {weather['humidity']} percent."
+        f"key={WEATHER_API_KEY}&q={LOCATION}"
     )
 
+    response = requests.get(url, timeout=10)
+
+    print("Weather API status:", response.status_code)
+    print("Weather API response:", response.text[:500])
+
+    data = response.json()
+
+    if "current" not in data:
+        raise Exception(f"Weather API returned an error: {data}")
+
+    return {
+        "temp": data["current"]["temp_f"],
+        "condition": data["current"]["condition"]["text"],
+        "wind": data["current"]["wind_mph"],
+        "humidity": data["current"]["humidity"]
+    }
 
 def traffic_report():
     return (
