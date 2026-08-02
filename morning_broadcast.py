@@ -20,13 +20,15 @@ response = requests.get(url, timeout=10)
 print("Weather API status:", response.status_code)
 print("Weather API response:", response.text[:500])
 
-if response.status_code != 200:
-    raise Exception(
-        f"Weather API error {response.status_code}: {response.text}"
-    )
+response = requests.get(url, timeout=10)
+
+print("Weather API status:", response.status_code)
+print("Weather API response:", response.text)
 
 data = response.json()
 
+if "current" not in data:
+    raise Exception(f"Weather API returned an error: {data}")
 def weather_report(weather):
     return (
         f"Here is your Delaware forecast. "
