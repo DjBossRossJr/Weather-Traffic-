@@ -22,9 +22,6 @@ STREAM_COMMAND = [
     "-f", "mp3",
     os.getenv("RADIO_STREAM_URL")
 ]
-    RADIO_STREAM_URL
-]
-
 
 # ───────────────────────────────────────────────
 # SCHEDULING LOGIC
