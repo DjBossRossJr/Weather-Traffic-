@@ -175,3 +175,43 @@ def verify_timestamps(mp3_paths):
         icon = "✅" if fresh else "⚠️  STALE"
         print(f"  {icon}  {path.name}  |  {mtime.strftime('%H:%M:%S EDT')}  |  {int(age_s)}s old")
     return all_fresh
+
+# ── MAIN ──────────────────────────────────────────────────────────
+def main():
+    print(f"\n{'═'*60}")
+    print(f"  EYE ON THE SKIES — Automation Pipeline")
+    print(f"  {STATION}")
+    print(f"  {datetime.datetime.now().strftime('%A, %B %-d, %Y  %-I:%M %p EDT')}")
+    print(f"{'═'*60}\n")
+
+    print("[1/5]  🌦   Fetching live conditions from The Weather Channel...")
+    try:
+        w = fetch_twc_conditions()
+    except Exception as e:
+        print(f"  ⚠️  Scrape failed ({e}) — loading cache...")
+        w = load_cached_conditions()
+
+    print("\n[2/5]  📝  Building break scripts...")
+    scripts = build_scripts(w)
+    for k in scripts:
+        print(f"  ✅  {k}")
+
+    print("\n[3/5]  🔊  Generating MP3 files via gTTS...")
+    mp3_paths, stamp = generate_mp3s(scripts)
+
+    print("\n[4/5]  🕐  Verifying timestamps...")
+    verify_timestamps(mp3_paths)
+
+    print("\n[5/5]  📤  Uploading to Dropbox for RadioJar sync...")
+    from dropbox_uploader import upload_weather_track
+    upload_weather_track()
+
+    print(f"\n{'═'*60}")
+    print(f"  ✅  Pipeline complete — {len(mp3_paths)} MP3s generated")
+    print(f"  📁  Output: {OUTPUT_DIR.resolve()}")
+    print(f"  🌦   {w['temp']}°F {w['condition']} | Radar: {w['radar']}")
+    print(f"{'═'*60}\n")
+
+if __name__ == "__main__":
+    main()
+
