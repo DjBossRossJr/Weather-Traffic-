@@ -18,7 +18,13 @@ def get_weather():
     )
 
     response = requests.get(url, timeout=10)
-    data = response.json()
+
+if response.status_code != 200:
+    raise Exception(
+        f"Weather API error {response.status_code}: {response.text}"
+    )
+
+data = response.json()
 
     return {
         "temp": data["current"]["temp_f"],
