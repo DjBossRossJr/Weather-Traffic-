@@ -16,8 +16,11 @@ STREAM_COMMAND = [
     "ffmpeg",
     "-re",
     "-i", "live_ai_output.mp3",
-    "-f", "wav",
-    "default"
+    "-acodec", "libmp3lame",
+    "-ab", "128k",
+    "-content_type", "audio/mpeg",
+    "-f", "mp3",
+    "icecast://source:1!Virginia918@stream.radiojar.com:8000/upresaqrxbuvv"
 ]
 
 # ───────────────────────────────────────────────
