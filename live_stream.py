@@ -25,7 +25,7 @@ STREAM_COMMAND = [
 # ───────────────────────────────────────────────
 
 def get_delaware_weather():
-    url = "https://api.weatherapi.com/v1/current.json?key=YOUR_KEY&q=Newark,DE"
+    url = "https://api.weatherapi.com/v1/current.json?key=eh4FZOMlzAybrUuS&q=Newark,DE"
     r = requests.get(url).json()
     return {
         "temp": r["current"]["temp_f"],
