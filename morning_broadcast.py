@@ -48,26 +48,38 @@ def get_weather():
 
 
 def get_weather():
-    url = (
-        "https://api.weatherapi.com/v1/current.json?"
-        f"key={WEATHER_API_KEY}&q={LOCATION}"
+
+    headers = {
+        "User-Agent": "Delaware All Saints Gospel Radio weather automation"
+    }
+
+    points_url = "https://api.weather.gov/points/39.6837,-75.7497"
+
+    points_response = requests.get(
+        points_url,
+        headers=headers,
+        timeout=10
     )
 
-    response = requests.get(url, timeout=10)
+    points = points_response.json()
 
-    print("Weather API status:", response.status_code)
-    print("Weather API response:", response.text[:500])
+    forecast_url = points["properties"]["forecast"]
 
-    data = response.json()
+    forecast_response = requests.get(
+        forecast_url,
+        headers=headers,
+        timeout=10
+    )
 
-    if "current" not in data:
-        raise Exception(f"Weather API returned an error: {data}")
+    forecast = forecast_response.json()
+
+    period = forecast["properties"]["periods"][0]
 
     return {
-        "temp": data["current"]["temp_f"],
-        "condition": data["current"]["condition"]["text"],
-        "wind": data["current"]["wind_mph"],
-        "humidity": data["current"]["humidity"]
+        "temp": period["temperature"],
+        "condition": period["shortForecast"],
+        "wind": period["windSpeed"],
+        "humidity": "N/A"
     }
 
 def traffic_report():
