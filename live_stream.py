@@ -46,17 +46,37 @@ def ai_mode_now():
 # ───────────────────────────────────────────────
 
 def get_delaware_weather():
-    url = (
-        f"https://api.weatherapi.com/v1/current.json?"
-        f"key={WEATHER_API_KEY}&q={WEATHER_LOCATION}"
+
+    headers = {
+        "User-Agent": "Delaware All Saints Gospel Radio automation"
+    }
+
+    points_url = (
+        "https://api.weather.gov/points/"
+        "39.6837,-75.7497"
     )
-    r = requests.get(url, timeout=10).json()
+
+    points = requests.get(
+        points_url,
+        headers=headers,
+        timeout=10
+    ).json()
+
+    forecast_url = points["properties"]["forecast"]
+
+    forecast = requests.get(
+        forecast_url,
+        headers=headers,
+        timeout=10
+    ).json()
+
+    period = forecast["properties"]["periods"][0]
 
     return {
-        "temp": r["current"]["temp_f"],
-        "condition": r["current"]["condition"]["text"],
-        "wind": r["current"]["wind_mph"],
-        "humidity": r["current"]["humidity"]
+        "temp": period["temperature"],
+        "condition": period["shortForecast"],
+        "wind": period["windSpeed"],
+        "humidity": "not available"
     }
 
 def build_weather_report(w):
