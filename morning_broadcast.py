@@ -1,50 +1,10 @@
 #!/usr/bin/env python3
 
-import os
 import datetime
 import requests
 from gtts import gTTS
 
 STATION = "Delaware All Saints Gospel Radio"
-LOCATION = "Newark,DE"
-
-def get_weather():
-
-    headers = {
-        "User-Agent": "Delaware All Saints Gospel Radio weather automation"
-    }
-
-    points_url = (
-        "https://api.weather.gov/points/"
-        "39.6837,-75.7497"
-    )
-
-    points_response = requests.get(
-        points_url,
-        headers=headers,
-        timeout=10
-    )
-
-    points = points_response.json()
-
-    forecast_url = points["properties"]["forecast"]
-
-    forecast_response = requests.get(
-        forecast_url,
-        headers=headers,
-        timeout=10
-    )
-
-    forecast = forecast_response.json()
-
-    period = forecast["properties"]["periods"][0]
-
-    return {
-        "temp": period["temperature"],
-        "condition": period["shortForecast"],
-        "wind": period["windSpeed"],
-        "humidity": "N/A"
-    }
 
 
 def get_weather():
@@ -81,6 +41,16 @@ def get_weather():
         "wind": period["windSpeed"],
         "humidity": "N/A"
     }
+
+
+def weather_report(weather):
+    return (
+        f"Here is your Delaware forecast. "
+        f"Temperatures are currently {weather['temp']} degrees "
+        f"with {weather['condition']}. "
+        f"Winds are {weather['wind']}. "
+    )
+
 
 def traffic_report():
     return (
