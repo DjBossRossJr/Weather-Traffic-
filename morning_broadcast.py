@@ -10,16 +10,22 @@ STATION = "Delaware All Saints Gospel Radio"
 def get_weather():
 
     headers = {
-        "User-Agent": "Delaware All Saints Gospel Radio weather automation"
+        "User-Agent": "Delaware All Saints Gospel Radio automation"
     }
 
-    points_url = "https://api.weather.gov/points/39.6837,-75.7497"
+    # Newark, Delaware coordinates
+    points_url = (
+        "https://api.weather.gov/points/"
+        "39.6837,-75.7497"
+    )
 
     points_response = requests.get(
         points_url,
         headers=headers,
         timeout=10
     )
+
+    points_response.raise_for_status()
 
     points = points_response.json()
 
@@ -31,6 +37,8 @@ def get_weather():
         timeout=10
     )
 
+    forecast_response.raise_for_status()
+
     forecast = forecast_response.json()
 
     period = forecast["properties"]["periods"][0]
@@ -39,20 +47,22 @@ def get_weather():
         "temp": period["temperature"],
         "condition": period["shortForecast"],
         "wind": period["windSpeed"],
-        "humidity": "N/A"
+        "humidity": "Not available"
     }
 
 
 def weather_report(weather):
+
     return (
         f"Here is your Delaware forecast. "
         f"Temperatures are currently {weather['temp']} degrees "
         f"with {weather['condition']}. "
-        f"Winds are {weather['wind']}. "
+        f"Winds are {weather['wind']}."
     )
 
 
 def traffic_report():
+
     return (
         "For our listeners traveling through Delaware, "
         "traffic is being monitored across Interstate 95, "
@@ -96,6 +106,7 @@ def build_script(weather):
 
         f"Thank you for starting your day with "
         f"{STATION}. "
+
         f"Stay blessed, keep the faith, and keep it right here."
     )
 
