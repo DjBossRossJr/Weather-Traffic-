@@ -8,10 +8,10 @@ from gtts import gTTS
 STATION = "Delaware All Saints Gospel Radio"
 UPDATE_INTERVAL = 60  # seconds
 
-WEATHER_API_KEY = "eh4FZOMlzAybrUuS"  # your WeatherAPI key
+WEATHER_API_KEY = "eh4FZOMlzAybrUuS"
 WEATHER_LOCATION = "Newark,DE"
 
-# ffmpeg output – adjust "default" to your actual audio device if needed
+# Live streaming to RadioJar
 STREAM_COMMAND = [
     "ffmpeg",
     "-re",
@@ -28,26 +28,17 @@ STREAM_COMMAND = [
 # ───────────────────────────────────────────────
 
 def ai_mode_now():
-    """
-    Returns:
-      "station_id"  → play top-of-hour ID
-      "live_show"   → Friday 8–10 PM (AI silent)
-      "ai"          → normal AI operation
-    """
     now = datetime.datetime.now()
     day = now.weekday()   # Monday=0, Friday=4
     hour = now.hour
     minute = now.minute
 
-    # Rule 1 — Top-of-hour Station ID
     if minute == 0:
         return "station_id"
 
-    # Rule 2 — Friday Live Show (8 PM to 10 PM)
     if day == 4 and 20 <= hour < 22:
         return "live_show"
 
-    # Rule 3 — Normal AI
     return "ai"
 
 # ───────────────────────────────────────────────
