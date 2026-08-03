@@ -2,18 +2,14 @@ name: Delaware All Saints Global Morning Broadcast
 
 on:
   schedule:
-    # Runs every day at 5:00 AM Eastern Time
     - cron: "0 10 * * *"
-
   workflow_dispatch:
 
 jobs:
   morning-broadcast:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -26,11 +22,16 @@ jobs:
         run: |
           pip install requests gtts
 
+      - name: Check MP3 file
+        run: |
+          ls -lh *.mp3
+
       - name: Generate Gospel Morning Broadcast
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
         run: |
           python morning_broadcast.py
+
 
 - name: Generate Gospel Morning Broadcast
   run: |
