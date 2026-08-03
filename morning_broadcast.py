@@ -463,20 +463,30 @@ def main():
             logger.exception("One-shot run failed")
         return
 
-    # Continuous loop
+def main():
+
+    print("Starting Delaware All Saints Global Morning Broadcast")
+
     try:
-        run_loop(
-            coords=args.coords,
-            station=args.station,
-            poll_interval=args.interval,
-            traffic_provider=args.traffic_provider,
-            traffic_api_key=args.traffic_key,
-            traffic_radius_km=args.traffic_radius,
-            openai_refine=args.openai_refine and bool(os.getenv("OPENAI_API_KEY")),
-            speak_on_change_only=not args.always_speak,
-        )
-    except KeyboardInterrupt:
-        logger.info("Interrupted by user, exiting")
+        weather = get_weather()
+
+    except Exception as e:
+        print(f"Weather error: {e}")
+
+        weather = {
+            "temp": "unavailable",
+            "condition": "weather data unavailable",
+            "wind": "unavailable",
+            "humidity": "Not available"
+        }
+
+    script = build_script(weather)
+
+    print(script)
+
+    create_audio(script)
+
+    print("Broadcast MP3 created successfully.")
 
 
 if __name__ == "__main__":
