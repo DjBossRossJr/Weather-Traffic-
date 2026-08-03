@@ -129,9 +129,18 @@ def create_audio(script):
 
 def main():
 
-    print("Starting Global Morning Update")
+    print("Starting Global Morning Update - WEATHER.GOV VERSION")
 
-    weather = get_weather()
+    try:
+        weather = get_weather()
+    except Exception as e:
+        print(f"Weather error: {e}")
+        weather = {
+            "temp": "unavailable",
+            "condition": "weather data unavailable",
+            "wind": "unavailable",
+            "humidity": "Not available"
+        }
 
     script = build_script(weather)
 
