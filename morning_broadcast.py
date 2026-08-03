@@ -91,8 +91,7 @@ def build_script(weather):
     return (
         f"Good morning, good afternoon, and good evening "
         f"to our listeners around the world. "
-
-        f"You are listening to {STATION}, "
+f"You are listening to {STATION}, "
         f"broadcasting from Delaware to the nations. "
         f"Where Praise Lives. "
 
@@ -109,7 +108,7 @@ def build_script(weather):
 
         f"Stay blessed, keep the faith, and keep it right here."
     )
-
+      
 
 def create_audio(script):
 
