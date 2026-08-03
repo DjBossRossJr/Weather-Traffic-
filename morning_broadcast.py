@@ -125,6 +125,8 @@ def create_audio(script):
     print(f"Created {filename}")
 
 
+
+
 def main():
 
     print("Starting Global Morning Update")
