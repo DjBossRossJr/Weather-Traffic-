@@ -89,25 +89,26 @@ def build_script(weather):
     )
 
     return (
-        f"Good morning, good afternoon, and good evening "
-        f"to our listeners around the world. "
-f"You are listening to {STATION}, "
-        f"broadcasting from Delaware to the nations. "
-        f"Where Praise Lives. "
+    f"Good morning, good afternoon, and good evening "
+    f"to our listeners around the world. "
 
-        f"Today is {today}. "
+    f"You are listening to {STATION}, "
+    f"broadcasting from Delaware to the nations. "
+    f"Where Praise Lives. "
 
-        f"{weather_report(weather)} "
+    f"Today is {today}. "
 
-        f"{traffic_report()} "
+    f"{weather_report(weather)} "
 
-        f"{gospel_inspiration()} "
+    f"{traffic_report()} "
 
-        f"Thank you for starting your day with "
-        f"{STATION}. "
+    f"{gospel_inspiration()} "
 
-        f"Stay blessed, keep the faith, and keep it right here."
-    )
+    f"Thank you for starting your day with "
+    f"{STATION}. "
+
+    f"Stay blessed, keep the faith, and keep it right here."
+)
       
 
 def create_audio(script):
