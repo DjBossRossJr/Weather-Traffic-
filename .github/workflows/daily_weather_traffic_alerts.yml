@@ -1,0 +1,43 @@
+name: Delaware All Saints Daily Weather, Traffic & Alerts
+
+on:
+  schedule:
+    # Morning Rush Hour - 6 AM Eastern
+    - cron: "0 10 * * *"
+    # Noon / Midday - 12 PM Eastern
+    - cron: "0 16 * * *"
+    # 5 PM Rush Hour - 5 PM Eastern
+    - cron: "0 21 * * *"
+    # Bedtime - 10 PM Eastern
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  daily-broadcast:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests gtts
+
+      - name: Generate Weather, Traffic & Alerts
+        env:
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          TRAFFIC_API_KEY: ${{ secrets.TRAFFIC_API_KEY }}
+        run: |
+          python morning_broadcast.py
+          python traffic_broadcast.py
+          python severe_alerts.py
+
+      - name: Check MP3 files
+        run: |
+          ls -lh *.mp3
