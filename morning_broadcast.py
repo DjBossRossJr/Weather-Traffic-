@@ -103,7 +103,6 @@ def build_script(weather):
         f"Stay blessed and keep it right here."
     )
 
-
 def create_audio(script):
 
     filename = (
@@ -138,3 +137,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
