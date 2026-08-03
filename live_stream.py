@@ -8,9 +8,6 @@ from gtts import gTTS
 STATION = "Delaware All Saints Gospel Radio"
 UPDATE_INTERVAL = 60  # seconds
 
-WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
-WEATHER_LOCATION = "Newark,DE"
-
 # Live streaming to RadioJar
 STREAM_COMMAND = [
     "ffmpeg",
