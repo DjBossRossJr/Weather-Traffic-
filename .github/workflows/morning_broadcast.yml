@@ -32,8 +32,10 @@ jobs:
         run: |
           python morning_broadcast.py
 
-      - name: Upload MP3 to RadioJar
-        env:
-          RADIOJAR_API_KEY: ${{ secrets.RADIOJAR_API_KEY }}
-        run: |
-          python radiojar_upload.py
+- name: Generate Gospel Morning Broadcast
+  run: |
+    python morning_broadcast.py
+
+- name: Check MP3 file
+  run: |
+    ls -lh *.mp3
