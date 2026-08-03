@@ -7,6 +7,16 @@ from gtts import gTTS
 STATION = "Delaware All Saints Gospel Radio"
 
 
+
+
+def weather_report(weather):
+
+    return (
+        f"Here is your Delaware forecast. "
+        f"Temperatures are currently {weather['temp']} degrees "
+        f"with {weather['condition']}. "
+        f"Winds are {weather['wind']}."
+    )
 def get_weather():
 
     headers = {
@@ -49,17 +59,6 @@ def get_weather():
         "wind": period["windSpeed"],
         "humidity": "Not available"
     }
-
-
-def weather_report(weather):
-
-    return (
-        f"Here is your Delaware forecast. "
-        f"Temperatures are currently {weather['temp']} degrees "
-        f"with {weather['condition']}. "
-        f"Winds are {weather['wind']}."
-    )
-
 
 def traffic_report():
 
