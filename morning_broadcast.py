@@ -106,7 +106,10 @@ def build_script(weather):
 
 def create_audio(script):
 
-    filename = "delaware_all_saints_global_morning.mp3"
+    filename = (
+        f"delaware_all_saints_"
+        f"{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.mp3"
+    )
 
     voice = gTTS(
         text=script,
@@ -117,7 +120,6 @@ def create_audio(script):
     voice.save(filename)
 
     print(f"Created {filename}")
-
 
 def main():
 
