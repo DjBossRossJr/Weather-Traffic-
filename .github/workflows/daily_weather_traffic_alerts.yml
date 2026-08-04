@@ -43,4 +43,5 @@ jobs:
       - name: Stream to RadioJar
         run: |
           ffmpeg -re -i output.mp3 -acodec libmp3lame -b:a 128k \
-          -f mp3 "icecast://source:${{ secrets.STREAM_PASSWORD }}@${{ secrets.STREAM_HOST }}:${{ secrets.STREAM_PORT }}/${{ secrets.STREAM_MOUNTPOINT }}"
+                  -f mp3 "icecast://source:${{ secrets.STREAM_PASSWORD }}@${{ secrets.STREAM_HOST }}"
+
