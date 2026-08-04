@@ -1,0 +1,16 @@
+Weather-Traffic-
+│
+├── ai_station_producer
+│   ├── station_producer.py
+│   ├── weather_engine.py
+│   ├── traffic_engine.py
+│   ├── inspiration_engine.py
+│   ├── script_builder.py
+│   ├── voice_engine.py
+│   └── config.py
+│
+├── morning_broadcast.py
+├── traffic_broadcast.py
+├── audio_generator.py
+└── .github
+    └── workflows
