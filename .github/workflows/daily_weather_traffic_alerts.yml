@@ -2,14 +2,16 @@ name: Delaware All Saints Daily Weather, Traffic & Alerts
 
 on:
   schedule:
-    # Morning Rush Hour - 6 AM Eastern
-    - cron: "0 10 * * *"
-    # Noon / Midday - 12 PM Eastern
-    - cron: "0 16 * * *"
-    # 5 PM Rush Hour - 5 PM Eastern
-    - cron: "0 21 * * *"
-    # Bedtime - 10 PM Eastern
-    - cron: "0 2 * * *"
+    - cron: "0 4 * * *"     # 12 AM Eastern
+    - cron: "0 10 * * *"    # 6 AM Eastern
+    - cron: "0 11 * * *"    # 7 AM Eastern
+    - cron: "0 14 * * *"    # 10 AM Eastern
+    - cron: "0 16 * * *"    # 12 PM Eastern
+    - cron: "0 20 * * *"    # 4 PM Eastern
+    - cron: "0 21 * * *"    # 5 PM Eastern
+    - cron: "0 2 * * *"     # 10 PM Eastern (next day UTC)
+    - cron: "0 3 * * *"     # 11 PM Eastern (next day UTC)
+
   workflow_dispatch:
 
 jobs:
@@ -29,11 +31,11 @@ jobs:
         run: |
           pip install requests gtts
 
-      - name: Generate Weather, Traffic & Alerts
-        env:
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-          TRAFFIC_API_KEY: ${{ secrets.TRAFFIC_API_KEY }}
+      - name: Install ffmpeg
         run: |
-          python morning_broadcast.py
-          python traffic_broadcast.py
-          python severe_alerts.py
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Run broadcast
+        run: |
+          python3 traffic_broadcast.py
