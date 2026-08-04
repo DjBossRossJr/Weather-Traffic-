@@ -35,6 +35,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
+          
+      - name: Run broadcast
+        run: |
+          python3 traffic_broadcast.py
+
+      - name: Stream to RadioJar
+        run: |
+          ffmpeg -re -i output.mp3 -acodec libmp3lame -b:a 128k \
+          -f mp3 "icecast://source:${{ secrets.STREAM_PASSWORD }}@${{ secrets.STREAM_HOST }}:${{ secrets.STREAM_PORT }}/${{ secrets.STREAM_MOUNTPOINT }}"
 
       - name: Run broadcast
         run: |
