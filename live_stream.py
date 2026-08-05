@@ -158,8 +158,7 @@ def generate_audio(text):
     tts.save("live_ai_output.mp3")
 
 def stream_audio():
-    subprocess.run(STREAM_COMMAND, check=True)
-
+    subprocess.Popen(STREAM_COMMAND)
 # ───────────────────────────────────────────────
 # MAIN LOOP
 # ───────────────────────────────────────────────
