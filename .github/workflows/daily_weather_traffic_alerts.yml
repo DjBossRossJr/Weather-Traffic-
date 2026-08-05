@@ -50,19 +50,50 @@ jobs:
       - name: Create broadcast audio
   run: |
     python3 audio_generator.py
+name: Delaware All Saints Daily Weather, Traffic & Alerts
 
-- name: Start RadioJar Live Stream
-  run: |
-    python3 live_stream.py
-  env:
-    STREAM_HOST: ${{ secrets.STREAM_HOST }}
-    STREAM_PORT: ${{ secrets.STREAM_PORT }}
-    STREAM_USERNAME: ${{ secrets.STREAM_USERNAME }}
-    STREAM_PASSWORD: ${{ secrets.STREAM_PASSWORD }}
-    STREAM_MOUNTPOINT: ${{ secrets.STREAM_MOUNTPOINT }}
+on:
+  schedule:
+    - cron: "0 9 * * *"
+    - cron: "0 10 * * *"
+    - cron: "0 11 * * *"
+    - cron: "0 12 * * *"
+    - cron: "0 13 * * *"
+    - cron: "0 16 * * *"
+    - cron: "0 20 * * *"
+    - cron: "0 21 * * *"
+    - cron: "0 22 * * *"
+    - cron: "0 23 * * *"
 
-- name: Save broadcast file
-  uses: actions/upload-artifact@v4
-  with:
-    name: delaware-all-saints-broadcast
-    path: output.mp3
+  workflow_dispatch:
+
+jobs:
+  daily-broadcast:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests gtts
+
+      - name: Generate traffic update
+        run: python3 traffic_broadcast.py
+
+      - name: Generate weather broadcast
+        run: python3 morning_broadcast.py
+
+      - name: Create broadcast audio
+        run: python3 audio_generator.py
+
+      - name: Save broadcast file
+        uses: actions/upload-artifact@v4
+        with:
+          name: delaware-all-saints-broadcast
+          path: output.mp3
