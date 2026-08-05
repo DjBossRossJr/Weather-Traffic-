@@ -29,19 +29,20 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install requests gtts
+        run: |
+          pip install requests gtts
 
       - name: Generate traffic update
-        run: python3 traffic_broadcast.py
+        run: |
+          python3 traffic_broadcast.py
 
       - name: Generate weather broadcast
-        run: python3 morning_broadcast.py
+        run: |
+          python3 morning_broadcast.py
 
       - name: Create broadcast audio
-        run: python3 audio_generator.py
-
-      -       - name: Create broadcast audio
-        run: python3 audio_generator.py
+        run: |
+          python3 audio_generator.py
 
       - name: Start RadioJar Live Stream
         env:
@@ -50,7 +51,8 @@ jobs:
           STREAM_USERNAME: ${{ secrets.STREAM_USERNAME }}
           STREAM_PASSWORD: ${{ secrets.STREAM_PASSWORD }}
           STREAM_MOUNTPOINT: ${{ secrets.STREAM_MOUNTPOINT }}
-        run: python3 live_stream.py
+        run: |
+          python3 live_stream.py
 
       - name: Save broadcast file
         uses: actions/upload-artifact@v4
