@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import time, datetime, requests, subprocess
 from gtts import gTTS
 
