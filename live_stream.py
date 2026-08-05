@@ -18,7 +18,7 @@ STREAM_COMMAND = [
     "-ab", "128k",
     "-content_type", "audio/mpeg",
     "-f", "mp3",
-    os.getenv("RADIO_STREAM_URL")
+   f"icecast://{os.getenv('STREAM_USERNAME')}:{os.getenv('STREAM_PASSWORD')}@{os.getenv('STREAM_HOST')}:{os.getenv('STREAM_PORT')}/{os.getenv('STREAM_MOUNTPOINT')}"
 ]
 
 # ───────────────────────────────────────────────
