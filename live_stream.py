@@ -9,7 +9,6 @@ from gtts import gTTS
 STATION = "Delaware All Saints Gospel Radio"
 UPDATE_INTERVAL = 60  # seconds
 
-# Live streaming to RadioJar
 STREAM_COMMAND = [
     "ffmpeg",
     "-re",
