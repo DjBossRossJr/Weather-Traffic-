@@ -18,7 +18,10 @@ STREAM_COMMAND = [
     "-ab", "128k",
     "-content_type", "audio/mpeg",
     "-f", "mp3",
-   f"icecast://{os.getenv('STREAM_USERNAME')}:{os.getenv('STREAM_PASSWORD')}@{os.getenv('STREAM_HOST')}:{os.getenv('STREAM_PORT')}/{os.getenv('STREAM_MOUNTPOINT')}"
+    "-ice_name", "Delaware All Saints Gospel Radio",
+    "-ice_genre", "Gospel",
+    "-ice_description", "Delaware All Saints Daily Weather Traffic & Alerts",
+    f"icecast://{os.getenv('STREAM_USERNAME')}:{os.getenv('STREAM_PASSWORD')}@{os.getenv('STREAM_HOST')}:{os.getenv('STREAM_PORT')}/{os.getenv('STREAM_MOUNTPOINT')}"
 ]
 
 # ───────────────────────────────────────────────
