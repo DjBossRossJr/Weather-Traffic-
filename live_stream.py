@@ -13,7 +13,7 @@ from gtts import gTTS
 # ==========================================================
 
 STATION = "Delaware All Saints Gospel Radio"
-UPDATE_INTERVAL = 60  # seconds
+UPDATE_INTERVAL = 590 # seconds
 
 # ----------------------------------------------------------
 # RadioJar GitHub Secrets
