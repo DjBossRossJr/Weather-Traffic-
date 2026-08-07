@@ -13,7 +13,7 @@ from gtts import gTTS
 # ==========================================================
 
 STATION = "Delaware All Saints Gospel Radio"
-UPDATE_INTERVAL = 590 # seconds
+UPDATE_INTERVAL = 60 # seconds
 
 # ----------------------------------------------------------
 # RadioJar GitHub Secrets
@@ -45,13 +45,14 @@ if missing:
 STREAM_COMMAND = [
     "ffmpeg",
     "-re",
+    "-stream_loop", "-1",
     "-i", "live_ai_output.mp3",
     "-acodec", "libmp3lame",
     "-b:a", "128k",
     "-content_type", "audio/mpeg",
     "-f", "mp3",
     (
-        f"icecast://source:{STREAM_PASSWORD}"
+        f"icecast://{STREAM_USERNAME}:{STREAM_PASSWORD}"
         f"@{STREAM_HOST}:{STREAM_PORT}"
         f"/{STREAM_MOUNTPOINT}"
     ),
