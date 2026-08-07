@@ -97,22 +97,38 @@ def stream_audio():
 
 
 # ----------------------------------------------------------
-# Station Start
+# Station Start - Top of the Hour ID
 # ----------------------------------------------------------
+
+import time
+import datetime
 
 def main():
 
     print("AI Broadcast Started")
 
-    message = (
-        f"You're listening to {STATION}. "
-        "Where praise lives twenty-four hours a day. "
-        "Stay blessed and keep listening."
-    )
+    while True:
 
-    generate_audio(message)
+        now = datetime.datetime.now()
 
-    stream_audio()
+        # Play station ID at the top of every hour
+        if now.minute == 0:
+
+            message = (
+                f"You're listening to {STATION}. "
+                "Where praise lives twenty-four hours a day. "
+                "Stay blessed and keep listening."
+            )
+
+            generate_audio(message)
+
+            stream_audio()
+
+            # Prevent replaying multiple times during the same minute
+            time.sleep(65)
+
+        else:
+            time.sleep(10)
 
 
 if __name__ == "__main__":
