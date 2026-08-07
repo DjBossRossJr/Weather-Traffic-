@@ -39,3 +39,22 @@ jobs:
           RADIOJAR_API_KEY: ${{ secrets.RADIOJAR_API_KEY }}
         run: |
           python3 radiojar_upload.py
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install requests gtts
+
+      - name: Check Emergency Alerts
+        run: python3 emergency_alerts.py
+
+      - name: Generate Weather Traffic Broadcast
+        run: |
+          python3 audio_generator.py
+
+      - name: Upload Broadcast To RadioJar
+        env:
+          RADIOJAR_API_KEY: ${{ secrets.RADIOJAR_API_KEY }}
+        run: |
+          python3 radiojar_upload.py
