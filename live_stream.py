@@ -112,7 +112,7 @@ def main():
         now = datetime.datetime.now()
 
       # Play station ID at the top of every hour
-if now.minute == 0 and now.hour != last_hour:
+if now.minute == 0 and 1.hour != last_hour:
 
     last_hour = now.hour
 
