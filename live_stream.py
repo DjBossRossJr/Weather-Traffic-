@@ -1,32 +1,69 @@
-#!/usr/bin/env python3
+    #!/usr/bin/env python3
+
 import os
-import time, datetime, requests, subprocess
+import time
+import datetime
+import requests
+import subprocess
 from gtts import gTTS
 
-# ───────────────────────────────────────────────
-# CONFIG
-# ───────────────────────────────────────────────
+# ==========================================================
+# Delaware All Saints Gospel Radio
+# Live AI Weather • Traffic • Emergency Broadcast
+# ==========================================================
+
 STATION = "Delaware All Saints Gospel Radio"
 UPDATE_INTERVAL = 60  # seconds
+
+# ----------------------------------------------------------
+# RadioJar GitHub Secrets
+# ----------------------------------------------------------
+
+STREAM_HOST = os.getenv("STREAM_HOST")
+STREAM_PORT = os.getenv("STREAM_PORT")
+STREAM_PASSWORD = os.getenv("STREAM_PASSWORD")
+STREAM_MOUNTPOINT = os.getenv("STREAM_MOUNTPOINT")
+
+required = {
+    "STREAM_HOST": STREAM_HOST,
+    "STREAM_PORT": STREAM_PORT,
+    "STREAM_PASSWORD": STREAM_PASSWORD,
+    "STREAM_MOUNTPOINT": STREAM_MOUNTPOINT,
+}
+
+missing = [k for k, v in required.items() if not v]
+
+if missing:
+    raise RuntimeError(
+        f"Missing GitHub Secrets: {', '.join(missing)}"
+    )
+
+# ----------------------------------------------------------
+# FFmpeg Streaming Command
+# ----------------------------------------------------------
 
 STREAM_COMMAND = [
     "ffmpeg",
     "-re",
     "-i", "live_ai_output.mp3",
     "-acodec", "libmp3lame",
-    "-ab", "128k",
+    "-b:a", "128k",
     "-content_type", "audio/mpeg",
     "-f", "mp3",
-  f"icecast://source:{os.getenv('STREAM_PASSWORD')}@stream.radiojar.com:80/{os.getenv('STREAM_MOUNTPOINT')}"]
+    (
+        f"icecast://source:{STREAM_PASSWORD}"
+        f"@{STREAM_HOST}:{STREAM_PORT}"
+        f"/{STREAM_MOUNTPOINT}"
+    ),
+]
 
-
-# ───────────────────────────────────────────────
-# SCHEDULING LOGIC
-# ───────────────────────────────────────────────
+# ----------------------------------------------------------
+# Scheduling
+# ----------------------------------------------------------
 
 def ai_mode_now():
     now = datetime.datetime.now()
-    day = now.weekday()   # Monday=0, Friday=4
+    day = now.weekday()
     hour = now.hour
     minute = now.minute
 
@@ -38,23 +75,18 @@ def ai_mode_now():
 
     return "ai"
 
-# ───────────────────────────────────────────────
-# WEATHER
-# ───────────────────────────────────────────────
+# ----------------------------------------------------------
+# Weather
+# ----------------------------------------------------------
 
 def get_delaware_weather():
 
     headers = {
-        "User-Agent": "Delaware All Saints Gospel Radio automation"
+        "User-Agent": "Delaware All Saints Gospel Radio Automation"
     }
 
-    points_url = (
-        "https://api.weather.gov/points/"
-        "39.6837,-75.7497"
-    )
-
     points = requests.get(
-        points_url,
+        "https://api.weather.gov/points/39.6837,-75.7497",
         headers=headers,
         timeout=10
     ).json()
@@ -76,141 +108,187 @@ def get_delaware_weather():
         "humidity": "not available"
     }
 
-def build_weather_report(w):
+def build_weather_report(weather):
     return (
-        f"In Newark, Delaware, it is {w['temp']} degrees with "
-        f"{w['condition'].lower()}, winds at {w['wind']} miles per hour, "
-        f"and humidity at {w['humidity']} percent."
+        f"In Newark, Delaware it is "
+        f"{weather['temp']} degrees with "
+        f"{weather['condition'].lower()}, "
+        f"winds {weather['wind']}, "
+        f"humidity {weather['humidity']}."
     )
 
-# ───────────────────────────────────────────────
-# TRAFFIC MODES
-# ───────────────────────────────────────────────
+# ----------------------------------------------------------
+# Traffic
+# ----------------------------------------------------------
 
 def get_traffic_mode():
-    now = datetime.datetime.now()
-    hour = now.hour
+
+    hour = datetime.datetime.now().hour
 
     if 5 <= hour < 9:
-        return "morning_rush"
-    elif 11 <= hour < 13:
+        return "morning"
+
+    if 11 <= hour < 13:
         return "midday"
-    elif 16 <= hour < 18:
-        return "evening_rush"
-    elif 22 <= hour < 24:
-        return "late_night"
-    else:
-        return "normal"
+
+    if 16 <= hour < 18:
+        return "evening"
+
+    if hour >= 22:
+        return "late"
+
+    return "normal"
 
 def build_traffic_report(mode):
-    if mode == "morning_rush":
-        return (
-            "Morning rush hour delays on I-95 near Wilmington, "
-            "slowdowns approaching the Delaware Memorial Bridge, "
-            "and increased commuter traffic along Route 1."
-        )
 
-    if mode == "midday":
-        return (
-            "Midday traffic is generally light with steady flow around "
-            "Christiana Mall and Route 7. No major incidents reported."
-        )
+    reports = {
+        "morning":
+            "Morning rush hour traffic is heavy on I-95 near Wilmington and Route 1.",
 
-    if mode == "evening_rush":
-        return (
-            "Evening rush hour congestion building on I-95 northbound, "
-            "delays near the mall ramps, and heavier traffic approaching "
-            "the Delaware Memorial Bridge."
-        )
+        "midday":
+            "Traffic is moving well across Delaware with light congestion.",
 
-    if mode == "late_night":
-        return (
-            "Late-night roads are mostly clear across Delaware. Watch for "
-            "overnight construction zones and long-haul truck activity on I-95."
-        )
+        "evening":
+            "Evening commute delays are building along I-95 and Route 1.",
 
-    return "Traffic is moving normally across Delaware with no major incidents."
+        "late":
+            "Roads are mostly clear with occasional overnight construction.",
 
-# ───────────────────────────────────────────────
-# EMERGENCIES (PLACEHOLDER)
-# ───────────────────────────────────────────────
+        "normal":
+            "Traffic is moving normally across Delaware."
+    }
+
+    return reports[mode]
+
+# ----------------------------------------------------------
+# Emergency Alerts
+# ----------------------------------------------------------
 
 def get_emergency_status():
     return "No active emergency alerts at this time."
 
-# ───────────────────────────────────────────────
-# STATION ID
-# ───────────────────────────────────────────────
+# ----------------------------------------------------------
+# Station ID
+# ----------------------------------------------------------
 
 def build_station_id():
+
     return (
-        f"You are listening to {STATION}, broadcasting from Delaware to the world. "
-        f"Delaware All Saints Gospel Radio — established twenty twenty-one."
+        f"You're listening to {STATION}, "
+        "broadcasting from the First State to listeners around the world. "
+        "Where praise lives twenty-four hours a day."
     )
 
-# ───────────────────────────────────────────────
-# AI VOICE GENERATOR
-# ───────────────────────────────────────────────
+# ----------------------------------------------------------
+# Audio Generation
+# ----------------------------------------------------------
 
 def generate_audio(text):
-    tts = gTTS(text=text, lang="en", slow=False)
+
+    print("Generating audio...")
+
+    tts = gTTS(
+        text=text,
+        lang="en",
+        slow=False
+    )
+
     tts.save("live_ai_output.mp3")
 
+# ----------------------------------------------------------
+# Stream
+# ----------------------------------------------------------
+
 def stream_audio():
-    subprocess.Popen(STREAM_COMMAND)
-# ───────────────────────────────────────────────
-# MAIN LOOP
-# ───────────────────────────────────────────────
+
+    print("Connecting to RadioJar...")
+
+    result = subprocess.run(STREAM_COMMAND)
+
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"FFmpeg exited with status {result.returncode}"
+        )
+
+    print("Broadcast completed.")
+
+# ----------------------------------------------------------
+# Broadcast Modes
+# ----------------------------------------------------------
 
 def run_station_id():
-    script = build_station_id()
-    print("🔊 Station ID (top of hour)")
-    generate_audio(script)
+
+    generate_audio(build_station_id())
+
     stream_audio()
 
 def run_ai_update():
+
     try:
+
         weather = get_delaware_weather()
+
         weather_report = build_weather_report(weather)
+
     except Exception as e:
-        print(f"⚠️ Weather fetch failed: {e}")
-        weather_report = "Weather data is temporarily unavailable."
 
-    traffic_mode = get_traffic_mode()
-    traffic_report = build_traffic_report(traffic_mode)
+        print(e)
 
-    emergency_report = get_emergency_status()
+        weather_report = "Weather information is temporarily unavailable."
 
-    now = datetime.datetime.now().strftime("%A %B %-d, %-I:%M %p EDT")
+    traffic_report = build_traffic_report(
+        get_traffic_mode()
+    )
+
+    emergency = get_emergency_status()
+
+    now = datetime.datetime.now().strftime(
+        "%A %B %d, %I:%M %p EDT"
+    )
 
     script = (
         f"This is your live update from {STATION}. "
-        f"As of {now}, {weather_report} "
-        f"Traffic update: {traffic_report} "
-        f"Emergency status: {emergency_report} "
-        f"More live conditions in sixty seconds."
+        f"As of {now}. "
+        f"{weather_report} "
+        f"Traffic update. {traffic_report} "
+        f"Emergency update. {emergency} "
+        f"Stay blessed and keep listening to "
+        f"{STATION}."
     )
 
-    print("🎙️ AI live segment generated.")
     generate_audio(script)
+
     stream_audio()
 
+# ----------------------------------------------------------
+# Main
+# ----------------------------------------------------------
+
 def main():
-    print("🔴 AI LIVE BROADCAST STARTED — Weather, Traffic Modes, Emergencies")
+
+    print("AI Broadcast Started")
 
     while True:
+
         mode = ai_mode_now()
 
         if mode == "station_id":
+
+            print("Station ID")
+
             run_station_id()
 
         elif mode == "live_show":
-            print("🎧 Live show window (Friday 8–10 PM) — AI paused.")
+
+            print("Friday Live Show - AI Paused")
 
         else:
+
+            print("AI Weather Update")
+
             run_ai_update()
 
         time.sleep(UPDATE_INTERVAL)
 
 if __name__ == "__main__":
-    main()
+    main()  
