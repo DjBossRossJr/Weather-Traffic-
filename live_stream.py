@@ -20,7 +20,6 @@ STREAM_COMMAND = [
     f"icecast://source:{os.getenv('STREAM_PASSWORD')}@stream.radiojar.com:80/{os.getenv('STREAM_MOUNTPOINT')}"
 ]
 
-
 # ───────────────────────────────────────────────
 # SCHEDULING LOGIC
 # ───────────────────────────────────────────────
