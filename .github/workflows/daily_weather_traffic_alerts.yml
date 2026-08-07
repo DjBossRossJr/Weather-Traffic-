@@ -45,19 +45,16 @@ jobs:
       - name: Create broadcast audio
         run: |
           python3 audio_generator.py
-
-- name: Start RadioJar Live Stream
-  env:
-    STREAM_HOST: ${{ secrets.STREAM_HOST }}
-    STREAM_PORT: ${{ secrets.STREAM_PORT }}
-    STREAM_USERNAME: ${{ secrets.STREAM_USERNAME }}
-    STREAM_PASSWORD: ${{ secrets.STREAM_PASSWORD }}
-    STREAM_MOUNTPOINT: ${{ secrets.STREAM_MOUNTPOINT }}
-  run: |
-    python3 live_stream.py
-
-      - name: Save broadcast file
-        uses: actions/upload-artifact@v4
+      - name: Start RadioJar Live Stream
+        env:
+          STREAM_HOST: ${{ secrets.STREAM_HOST }}
+          STREAM_PORT: ${{ secrets.STREAM_PORT }}
+          STREAM_USERNAME: ${{ secrets.STREAM_USERNAME }}
+          STREAM_PASSWORD: ${{ secrets.STREAM_PASSWORD }}
+          STREAM_MOUNTPOINT: ${{ secrets.STREAM_MOUNTPOINT }}
+        run: |
+          python3 live_stream.py
+          
         with:
           name: delaware-all-saints-broadcast
           path: output.mp3
