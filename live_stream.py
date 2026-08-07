@@ -20,7 +20,7 @@ STREAM_COMMAND = [
     "-ice_name", "Delaware All Saints Gospel Radio",
     "-ice_genre", "Gospel",
     "-ice_description", "Delaware All Saints Daily Weather Traffic & Alerts",
-    f"icecast://{os.getenv('STREAM_USERNAME')}:{os.getenv('STREAM_PASSWORD')}@{os.getenv('STREAM_HOST')}:{os.getenv('STREAM_PORT')}/{os.getenv('STREAM_MOUNTPOINT')}"
+    "icecast://YOUR_SOURCE_USERNAME:YOUR_MOUNT_PASSWORD@link.radiojar.com:80/upresaqrxbuvv/master"
 ]
 
 # ───────────────────────────────────────────────
