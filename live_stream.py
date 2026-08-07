@@ -2,162 +2,46 @@
 
 import os
 import subprocess
-from gtts import gTTS
-
-# ==========================================================
-# Delaware All Saints Gospel Radio
-# Live AI Broadcast Stream
-# ==========================================================
+import datetime
 
 STATION = "Delaware All Saints Gospel Radio"
 
-# ----------------------------------------------------------
-# RadioJar GitHub Secrets
-# ----------------------------------------------------------
+def build_stream_command():
+    password = os.getenv("STREAM_PASSWORD")
+    mount = os.getenv("STREAM_MOUNTPOINT")
 
-STREAM_HOST = os.getenv("STREAM_HOST")
-STREAM_PORT = os.getenv("STREAM_PORT")
-STREAM_USERNAME = os.getenv("STREAM_USERNAME")
-STREAM_PASSWORD = os.getenv("STREAM_PASSWORD")
-STREAM_MOUNTPOINT = os.getenv("STREAM_MOUNTPOINT")
-
-required = {
-    "STREAM_HOST": STREAM_HOST,
-    "STREAM_PORT": STREAM_PORT,
-    "STREAM_USERNAME": STREAM_USERNAME,
-    "STREAM_PASSWORD": STREAM_PASSWORD,
-    "STREAM_MOUNTPOINT": STREAM_MOUNTPOINT,
-}
-
-missing = [k for k, v in required.items() if not v]
-
-if missing:
-    raise RuntimeError(
-        f"Missing GitHub Secrets: {', '.join(missing)}"
-    )
-
-
-# ----------------------------------------------------------
-# Create AI Audio
-# ----------------------------------------------------------
-
-def generate_audio(text):
-
-    print("Generating audio...")
-
-    tts = gTTS(
-        text=text,
-        lang="en",
-        slow=False
-    )
-
-    tts.save("live_ai_output.mp3")
-
-
-# ----------------------------------------------------------
-# RadioJar Stream
-# ----------------------------------------------------------
-
-def stream_audio():
-
-    stream_url = (
-        f"icecast://{STREAM_USERNAME}:{STREAM_PASSWORD}"
-        f"@{STREAM_HOST}:{STREAM_PORT}"
-        f"/{STREAM_MOUNTPOINT}"
-    )
-
-    command = [
+    return [
         "ffmpeg",
         "-re",
-        "-stream_loop",
-        "-1",
-        "-i",
-        "live_ai_output.mp3",
-        "-acodec",
-        "libmp3lame",
-        "-b:a",
-        "128k",
-        "-content_type",
-        "audio/mpeg",
-        "-f",
-        "mp3",
-        stream_url
+        "-i", "live_ai_output.mp3",
+        "-acodec", "libmp3lame",
+        "-ab", "128k",
+        "-content_type", "audio/mpeg",
+        "-f", "mp3",
+        f"icecast://source:{password}@stream.radiojar.com:80/{mount}"
     ]
 
-    print("Connecting to RadioJar...")
+def generate_audio():
+    print("AI audio generated for streaming.")
 
-    process = subprocess.Popen(command)
+def start_stream():
+    cmd = build_stream_command()
+    print("Starting scheduled stream...")
+    print(" ".join(cmd))
 
+    process = subprocess.Popen(cmd)
     process.wait()
 
-    if process.returncode != 0:
-        raise RuntimeError(
-            f"FFmpeg exited with status {process.returncode}"
-        )
-
-
- ----------------------------------------------------------
-# Station Start - Top of the Hour ID
-# ----------------------------------------------------------
-
-import time
-import datetime
+    print("Stream finished.")
 
 def main():
+    print(f"Starting scheduled broadcast for {STATION}")
+    print("Timestamp:", datetime.datetime.now())
 
-    print("AI Broadcast Started")
+    generate_audio()
+    start_stream()
 
-    while True:
-
-        now = datetime.datetime.now()
-
-      # Play station ID at the top of every hour
-if now.minute == 0 and 1.hour != last_hour:
-
-    last_hour = now.hour
-
-    message = (
-        f"You're listening to {STATION}. "
-        "Where praise lives twenty-four hours a day. "
-        "Stay blessed and keep listening."
-    )
-
-    generate_audio(message)
-
-    stream_audio()
-
-     import time
-import datetime
-
-def main():
-
-    print("AI Broadcast Started")
-
-    last_hour = -1
-
-    while True:
-
-        now = datetime.datetime.now()
-
-        if now.minute == 0 and now.hour != last_hour:
-
-            last_hour = now.hour
-
-            message = (
-                f"You're listening to {STATION}. "
-                "Where praise lives twenty-four hours a day. "
-                "Stay blessed and keep listening."
-            )
-
-            generate_audio(message)
-
-            stream_audio()
-
-            time.sleep(65)
-
-        else:
-            time.sleep(10)
-
+    print("Broadcast completed successfully.")
 
 if __name__ == "__main__":
-    main()       
+    main()
