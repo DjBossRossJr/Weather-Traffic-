@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-
 import os
 import subprocess
+import time
 import datetime
+from gtts import gTTS
 
 STATION = "Delaware All Saints Gospel Radio"
 
@@ -33,15 +34,44 @@ def start_stream():
     process.wait()
 
     print("Stream finished.")
+last_hour = -1
+
+def generate_audio(message):
+    print("Generating:", message)
+
+    tts = gTTS(
+        text=message,
+        lang="en"
+    )
+
+    tts.save("live_ai_output.mp3")
+
 
 def main():
+
     print(f"Starting scheduled broadcast for {STATION}")
-    print("Timestamp:", datetime.datetime.now())
 
-    generate_audio()
-    start_stream()
+    while True:
 
-    print("Broadcast completed successfully.")
+        now = datetime.datetime.now()
+
+        # Station ID once at the top of every hour
+        if now.minute == 0 and now.hour != last_hour:
+
+            last_hour = now.hour
+
+            message = (
+                f"You're listening to {STATION}. "
+                "Where praise lives twenty-four hours a day. "
+                "Stay blessed and keep listening."
+            )
+
+            generate_audio(message)
+
+            start_stream()
+
+        time.sleep(10)
+
 
 if __name__ == "__main__":
     main()
