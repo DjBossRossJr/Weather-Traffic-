@@ -22,6 +22,7 @@ def build_stream_command():
     ]
 
 def generate_audio():
+    # Your AI system should already create live_ai_output.mp3
     print("AI audio generated for streaming.")
 
 def start_stream():
