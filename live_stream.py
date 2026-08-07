@@ -17,11 +17,9 @@ STREAM_COMMAND = [
     "-ab", "128k",
     "-content_type", "audio/mpeg",
     "-f", "mp3",
-    "-ice_name", "Delaware All Saints Gospel Radio",
-    "-ice_genre", "Gospel",
-    "-ice_description", "Delaware All Saints Daily Weather Traffic & Alerts",
-    "icecast://YOUR_SOURCE_USERNAME:YOUR_MOUNT_PASSWORD@link.radiojar.com:80/upresaqrxbuvv/master"
+    f"icecast://source:{os.getenv('STREAM_PASSWORD')}@stream.radiojar.com:80/{os.getenv('STREAM_MOUNTPOINT')}"
 ]
+
 
 # ───────────────────────────────────────────────
 # SCHEDULING LOGIC
