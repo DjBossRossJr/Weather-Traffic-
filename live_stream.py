@@ -111,14 +111,20 @@ def main():
 
         now = datetime.datetime.now()
 
-        # Play station ID at the top of every hour
-        if now.minute == 0:
+      # Play station ID at the top of every hour
+if now.minute == 0 and now.hour != last_hour:
 
-            message = (
-                f"You're listening to {STATION}. "
-                "Where praise lives twenty-four hours a day. "
-                "Stay blessed and keep listening."
-            )
+    last_hour = now.hour
+
+    message = (
+        f"You're listening to {STATION}. "
+        "Where praise lives twenty-four hours a day. "
+        "Stay blessed and keep listening."
+    )
+
+    generate_audio(message)
+
+    stream_audio()
 
             generate_audio(message)
 
