@@ -126,11 +126,33 @@ if now.minute == 0 and 1.hour != last_hour:
 
     stream_audio()
 
+     import time
+import datetime
+
+def main():
+
+    print("AI Broadcast Started")
+
+    last_hour = -1
+
+    while True:
+
+        now = datetime.datetime.now()
+
+        if now.minute == 0 and now.hour != last_hour:
+
+            last_hour = now.hour
+
+            message = (
+                f"You're listening to {STATION}. "
+                "Where praise lives twenty-four hours a day. "
+                "Stay blessed and keep listening."
+            )
+
             generate_audio(message)
 
             stream_audio()
 
-            # Prevent replaying multiple times during the same minute
             time.sleep(65)
 
         else:
@@ -138,4 +160,4 @@ if now.minute == 0 and 1.hour != last_hour:
 
 
 if __name__ == "__main__":
-    main()
+    main()       
