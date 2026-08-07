@@ -1,37 +1,73 @@
 #!/usr/bin/env python3
 
+import datetime
+import requests
 from gtts import gTTS
-import os
 
-def create_audio():
-    text_parts = []
+STATION = "Delaware All Saints Gospel Radio"
 
-    if os.path.exists("traffic_report.txt"):
-        with open("traffic_report.txt", "r", encoding="utf-8") as f:
-            text_parts.append(f.read())
 
-    if os.path.exists("weather_report.txt"):
-        with open("weather_report.txt", "r", encoding="utf-8") as f:
-            text_parts.append(f.read())
+def get_weather():
 
-    if not text_parts:
-        text_parts.append(
-            "You are listening to Delaware All Saints Gospel Radio Podcast. "
-            "Your automated weather and traffic update is being prepared."
-        )
+    headers = {
+        "User-Agent": "Delaware All Saints Gospel Radio"
+    }
 
-    broadcast_text = "\n\n".join(text_parts)
+    url = "https://api.weather.gov/points/39.6837,-75.7497"
 
-    audio = gTTS(
-        text=broadcast_text,
-        lang="en",
-        slow=False
+    data = requests.get(
+        url,
+        headers=headers,
+        timeout=15
+    ).json()
+
+    forecast_url = data["properties"]["forecast"]
+
+    forecast = requests.get(
+        forecast_url,
+        headers=headers,
+        timeout=15
+    ).json()
+
+    period = forecast["properties"]["periods"][0]
+
+    return (
+        f"Temperature {period['temperature']} degrees. "
+        f"{period['shortForecast']}. "
+        f"Winds {period['windSpeed']}."
     )
 
-    audio.save("output.mp3")
 
-    print("Created output.mp3")
+def create_broadcast():
+
+    now = datetime.datetime.now()
+
+    weather = get_weather()
+
+    script = (
+        f"You're listening to {STATION}. "
+        "Where Praise Lives. "
+        f"This is your Delaware weather and traffic update. "
+        f"{weather} "
+        "Traffic is being monitored on Interstate 95, "
+        "Route 1, and the Delaware Memorial Bridge. "
+        "Please travel safely. "
+        "Remember Isaiah chapter forty-one verse ten. "
+        "Fear not, for I am with you. "
+        "Stay blessed and keep listening."
+    )
+
+    filename = "delaware_all_saints_update.mp3"
+
+    tts = gTTS(
+        text=script,
+        lang="en"
+    )
+
+    tts.save(filename)
+
+    print("Created:", filename)
 
 
 if __name__ == "__main__":
-    create_audio()
+    create_broadcast()
