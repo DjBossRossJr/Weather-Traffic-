@@ -18,6 +18,7 @@ STREAM_COMMAND = [
     "-content_type", "audio/mpeg",
     "-f", "mp3",
   f"icecast://source:{os.getenv('STREAM_PASSWORD')}@stream.radiojar.com:80/{os.getenv('STREAM_MOUNTPOINT')}"
+]
 
 
 # ───────────────────────────────────────────────
