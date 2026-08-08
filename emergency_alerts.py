@@ -69,6 +69,8 @@ def create_audio(message):
 
 
 def main():
+    if os.path.exists(OUTPUT_FILE):
+    os.remove(OUTPUT_FILE)
     alerts = get_alerts()
 
     if not alerts:
