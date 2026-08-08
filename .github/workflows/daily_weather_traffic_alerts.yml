@@ -43,19 +43,73 @@ jobs:
         run: |
           python3 emergency_alerts.py
 
-      - name: Upload Emergency Alert
-        if: hashFiles('emergency_alert.mp3') != ''
-        env:
-          RADIOJAR_API_KEY: ${{ secrets.RADIOJAR_API_KEY }}
-        run: |
-          python3 radiojar_upload.py emergency_alert.mp3
-
       - name: Generate Weather Traffic Broadcast
         run: |
           python3 audio_generator.py
 
-      - name: Upload Weather Traffic Broadcast
-        env:
-          RADIOJAR_API_KEY: ${{ secrets.RADIOJAR_API_KEY }}
+      - name: Prepare Broadcast Files
         run: |
-          python3 radiojar_upload.py delaware_all_saints_update.mp3
+          mkdir -p broadcast_files
+
+          if [ -f emergency_alert.mp3 ]; then
+            cp emergency_alert.mp3 broadcast_files/
+          fi
+
+          if [ -f delaware_all_saints_update.mp3 ]; then
+            cp delaware_all_saints_update.mp3 broadcast_files/
+          fi
+
+          echo "Broadcast files:"
+          ls -lh broadcast_files/
+
+      - name: Send Broadcast Files To Oracle Server
+        env:
+          ORACLE_HOST: ${{ secrets.ORACLE_HOST }}
+          ORACLE_USER: ${{ secrets.ORACLE_USER }}
+          ORACLE_SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+        run: |
+          set -e
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$ORACLE_SSH_KEY" > ~/.ssh/radio_server_key
+          chmod 600 ~/.ssh/radio_server_key
+
+          ssh-keyscan -H "$ORACLE_HOST" >> ~/.ssh/known_hosts
+
+          ssh \
+            -i ~/.ssh/radio_server_key \
+            "$ORACLE_USER@$ORACLE_HOST" \
+            "mkdir -p ~/radio-broadcast/incoming"
+
+          scp \
+            -i ~/.ssh/radio_server_key \
+            broadcast_files/*.mp3 \
+            "$ORACLE_USER@$ORACLE_HOST:~/radio-broadcast/incoming/"
+
+          ssh \
+            -i ~/.ssh/radio_server_key \
+            "$ORACLE_USER@$ORACLE_HOST" \
+            "ls -lh ~/radio-broadcast/incoming/"
+
+      - name: Tell Oracle Server To Process Broadcast
+        env:
+          ORACLE_HOST: ${{ secrets.ORACLE_HOST }}
+          ORACLE_USER: ${{ secrets.ORACLE_USER }}
+          ORACLE_SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+        run: |
+          set -e
+
+          printf '%s\n' "$ORACLE_SSH_KEY" > /tmp/radio_server_key
+          chmod 600 /tmp/radio_server_key
+
+          ssh \
+            -i /tmp/radio_server_key \
+            "$ORACLE_USER@$ORACLE_HOST" \
+            "if [ -x ~/radio-broadcast/process_broadcast.sh ]; then
+               ~/radio-broadcast/process_broadcast.sh
+             else
+               echo 'ERROR: process_broadcast.sh is not installed on Oracle server.'
+               exit 1
+             fi"
