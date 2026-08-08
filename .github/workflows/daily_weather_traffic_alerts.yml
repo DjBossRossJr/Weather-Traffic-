@@ -26,7 +26,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-          pip install requests gtts
+          python -m pip install --upgrade pip
+          python -m pip install requests gtts
 
       - name: Check Emergency Alerts
         run: |
