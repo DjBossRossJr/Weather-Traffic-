@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
-import requests
 import os
+import requests
 from gtts import gTTS
 
 ALERT_FILE = "last_alert.txt"
+OUTPUT_FILE = "emergency_alert.mp3"
 
 HEADERS = {
     "User-Agent": "Delaware All Saints Gospel Radio Emergency Alerts"
 }
 
-ALERT_TYPES = [
+ALERT_TYPES = {
     "Tornado Warning",
     "Severe Thunderstorm Warning",
     "Flash Flood Warning",
@@ -25,12 +26,11 @@ ALERT_TYPES = [
     "Wind Advisory",
     "Dense Fog Advisory",
     "Coastal Flood Advisory",
-    "Special Weather Statement"
-]
+    "Special Weather Statement",
+}
 
 
 def get_alerts():
-
     url = "https://api.weather.gov/alerts/active?area=DE"
 
     response = requests.get(
@@ -41,72 +41,84 @@ def get_alerts():
 
     response.raise_for_status()
 
-    return response.json()["features"]
+    return response.json().get("features", [])
 
 
 def get_last_alert():
-
     if os.path.exists(ALERT_FILE):
-        with open(ALERT_FILE, "r") as f:
-            return f.read()
+        with open(ALERT_FILE, "r", encoding="utf-8") as file:
+            return file.read().strip()
 
     return ""
 
 
-def save_alert(alert):
-
-    with open(ALERT_FILE, "w") as f:
-        f.write(alert)
+def save_alert(alert_id):
+    with open(ALERT_FILE, "w", encoding="utf-8") as file:
+        file.write(alert_id)
 
 
 def create_audio(message):
-
-    filename = "emergency_alert.mp3"
-
     voice = gTTS(
         text=message,
         lang="en"
     )
 
-    voice.save(filename)
+    voice.save(OUTPUT_FILE)
 
-    print("Created:", filename)
+    print(f"Created: {OUTPUT_FILE}")
 
 
 def main():
-
     alerts = get_alerts()
 
+    if not alerts:
+        print("No active Delaware weather alerts.")
+        return
+
+    last_alert = get_last_alert()
+
     for alert in alerts:
+        properties = alert.get("properties", {})
 
-        title = alert["properties"]["event"]
+        event = properties.get("event", "")
 
-        if title in ALERT_TYPES:
+        if event not in ALERT_TYPES:
+            continue
 
-            headline = alert["properties"]["headline"]
-            description = alert["properties"]["description"]
+        alert_id = alert.get("id") or properties.get("headline", "")
 
-            alert_id = headline
+        if alert_id == last_alert:
+            print("No new emergency alerts.")
+            return
 
-            last = get_last_alert()
+        headline = properties.get(
+            "headline",
+            "A weather alert has been issued for Delaware."
+        )
 
-            if alert_id != last:
+        description = properties.get(
+            "description",
+            "Please monitor local weather conditions and follow official safety instructions."
+        )
 
-                message = (
-                    "Emergency weather update from "
-                    "Delaware All Saints Gospel Radio. "
-                    f"{headline}. "
-                    f"{description}. "
-                    "Please take precautions and stay safe."
-                )
+        message = (
+            "Emergency weather update from "
+            "Delaware All Saints Gospel Radio. "
+            f"{headline}. "
+            f"{description}. "
+            "Please take precautions and stay safe. "
+            "Stay tuned to Delaware All Saints Gospel Radio "
+            "for additional updates."
+        )
 
-                create_audio(message)
+        create_audio(message)
 
-                save_alert(alert_id)
+        save_alert(alert_id)
 
-                return
+        print("New emergency alert audio created.")
+        return
 
-    print("No new alerts.")
+    print("No new emergency alerts.")
 
 
 if __name__ == "__main__":
