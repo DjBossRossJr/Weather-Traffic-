@@ -69,8 +69,11 @@ def create_audio(message):
 
 
 def main():
+
+    # Remove any emergency audio left from this run.
     if os.path.exists(OUTPUT_FILE):
-    os.remove(OUTPUT_FILE)
+        os.remove(OUTPUT_FILE)
+
     alerts = get_alerts()
 
     if not alerts:
@@ -80,6 +83,7 @@ def main():
     last_alert = get_last_alert()
 
     for alert in alerts:
+
         properties = alert.get("properties", {})
 
         event = properties.get("event", "")
@@ -87,7 +91,10 @@ def main():
         if event not in ALERT_TYPES:
             continue
 
-        alert_id = alert.get("id") or properties.get("headline", "")
+        alert_id = (
+            alert.get("id")
+            or properties.get("headline", "")
+        )
 
         if alert_id == last_alert:
             print("No new emergency alerts.")
@@ -115,6 +122,7 @@ def main():
 
         create_audio(message)
 
+        # Save the alert ID only after the audio was successfully created.
         save_alert(alert_id)
 
         print("New emergency alert audio created.")
