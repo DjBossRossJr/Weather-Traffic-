@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import requests
 
 RADIOJAR_UPLOAD_URL = "https://api.radiojar.com/v2/media/upload/"
-AUDIO_FILE = "delaware_all_saints_update.mp3"
 
 
 def upload_to_radiojar(filename):
@@ -43,4 +43,8 @@ def upload_to_radiojar(filename):
 
 
 if __name__ == "__main__":
-    upload_to_radiojar(AUDIO_FILE)
+    if len(sys.argv) != 2:
+        print("Usage: python3 radiojar_upload.py <audio_file>")
+        raise SystemExit(1)
+
+    upload_to_radiojar(sys.argv[1])
