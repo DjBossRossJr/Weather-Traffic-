@@ -70,7 +70,7 @@ def create_audio(message):
 
 def main():
 
-    # Remove any emergency audio left from this run.
+    # Remove any emergency audio left from a previous run.
     if os.path.exists(OUTPUT_FILE):
         os.remove(OUTPUT_FILE)
 
@@ -122,7 +122,6 @@ def main():
 
         create_audio(message)
 
-        # Save the alert ID only after the audio was successfully created.
         save_alert(alert_id)
 
         print("New emergency alert audio created.")
