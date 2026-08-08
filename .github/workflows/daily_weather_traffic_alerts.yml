@@ -2,23 +2,18 @@ name: Delaware All Saints Daily Weather, Traffic & Alerts
 
 on:
   schedule:
-    # 5:00 AM Eastern
     - cron: "0 5 * * *"
       timezone: "America/New_York"
 
-    # 8:00 AM Eastern
     - cron: "0 8 * * *"
       timezone: "America/New_York"
 
-    # 12:00 PM Eastern
     - cron: "0 12 * * *"
       timezone: "America/New_York"
 
-    # 4:00 PM Eastern
     - cron: "0 16 * * *"
       timezone: "America/New_York"
 
-    # 7:00 PM Eastern
     - cron: "0 19 * * *"
       timezone: "America/New_York"
 
@@ -29,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
